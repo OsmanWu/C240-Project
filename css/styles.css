@@ -9,6 +9,8 @@
   --brand-gradient-start: #2A93D5; /* Sky Blue */
   --brand-gradient-end: #32D796;   /* Seafoam Green */
   --accent-cta: #00C875;           /* Emerald Green for primary CTA */
+  --accent-cta-hover: #00B56B;     /* Darker emerald for hover */
+  --accent-cta-active: #00A861;    /* Further darkened for active */
   --hero-card-bg: #357D8A;         /* Deep Teal for hero card */
   --neutral-bg: #F8FAFC;           /* Off-white for app background */
   --highlight-color: #31D8B5;      /* Turquoise keyword highlight */
@@ -331,8 +333,15 @@ h1, h2, h3, h4, h5, h6 {
 
 .cta-button:hover,
 .cta-button:focus {
+  background: var(--accent-cta-hover);
   transform: translateY(-2px);
   box-shadow: var(--shadow-xl);
+}
+
+.cta-button:active {
+  background: var(--accent-cta-active);
+  transform: translateY(0);
+  box-shadow: var(--shadow-lg);
 }
 
 .cta-description {
