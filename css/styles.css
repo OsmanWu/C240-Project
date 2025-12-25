@@ -5,12 +5,21 @@
 
 /* CSS Custom Properties / Design System */
 :root {
-  /* Brand Colors - Calming yet energetic */
-  --primary-color: #4F46E5;      /* Indigo - confidence & focus */
-  --primary-light: #6366F1;     /* Lighter indigo for hovers */
-  --primary-dark: #3730A3;      /* Darker indigo for depth */
-  --secondary-color: #06B6D4;   /* Cyan - fresh & optimistic */
-  --accent-color: #F59E0B;      /* Amber - energy & achievement */
+  /* Brand Colors - Updated per brand guide */
+  --brand-gradient-start: #2A93D5; /* Sky Blue */
+  --brand-gradient-end: #32D796;   /* Seafoam Green */
+  --accent-cta: #00C875;           /* Emerald Green for primary CTA */
+  --hero-card-bg: #357D8A;         /* Deep Teal for hero card */
+  --neutral-bg: #F8FAFC;           /* Off-white for app background */
+  --highlight-color: #31D8B5;      /* Turquoise keyword highlight */
+  --nav-link-color: #4A4A4A;       /* Dark Grey for inactive nav links */
+
+  /* Map core tokens to brand for broader usage */
+  --primary-color: var(--brand-gradient-start);
+  --primary-light: #46A6DD;        /* derived lighter blue */
+  --primary-dark: #1F78AD;         /* derived darker blue */
+  --secondary-color: var(--brand-gradient-end);
+  --accent-color: var(--accent-cta);
   
   /* Neutral Colors */
   --gray-50: #F9FAFB;
@@ -102,7 +111,7 @@ body {
   font-size: var(--font-size-base);
   line-height: var(--leading-normal);
   color: var(--gray-800);
-  background-color: var(--gray-50);
+  background-color: var(--neutral-bg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -203,7 +212,7 @@ h1, h2, h3, h4, h5, h6 {
    =================================== */
 
 .header {
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--neutral-bg);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--gray-200);
   position: sticky;
@@ -239,7 +248,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .nav-link {
   text-decoration: none;
-  color: var(--gray-600);
+  color: var(--nav-link-color);
   font-weight: 500;
   transition: color var(--transition-fast);
   padding: var(--space-2) var(--space-3);
@@ -271,13 +280,22 @@ h1, h2, h3, h4, h5, h6 {
 .hero {
   padding: var(--space-20) 0;
   text-align: center;
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+  background: linear-gradient(135deg, var(--brand-gradient-start) 0%, var(--brand-gradient-end) 100%);
   color: white;
 }
 
 .hero-content {
   max-width: 700px;
   margin: 0 auto;
+}
+
+/* Hero Card container to anchor content with Deep Teal background */
+.hero-card {
+  background: var(--hero-card-bg);
+  color: #FFFFFF;
+  padding: var(--space-8);
+  border-radius: var(--border-radius-2xl);
+  box-shadow: var(--shadow-xl);
 }
 
 .hero-title {
@@ -287,10 +305,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .highlight {
-  background: linear-gradient(120deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.1) 100%);
-  border-radius: var(--border-radius-md);
-  padding: var(--space-1) var(--space-3);
-  display: inline-block;
+  color: var(--highlight-color);
 }
 
 .hero-subtitle {
@@ -301,8 +316,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .cta-button {
-  background: white;
-  color: var(--primary-color);
+  background: var(--accent-cta);
+  color: #FFFFFF;
   padding: var(--space-4) var(--space-8);
   border: none;
   border-radius: var(--border-radius-xl);
