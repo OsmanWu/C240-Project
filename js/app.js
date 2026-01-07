@@ -9,8 +9,6 @@ class PolyMotivator {
     this.userPreferences = this.loadUserPreferences();
     this.currentStep = 1;
     this.isInitialized = false;
-    this.chatHistory = this.loadChatHistory();
-    this.chatResponseTemplates = this.initializeChatResponseTemplates();
     
     // Content databases for personalization
     this.motivationContent = this.initializeMotivationContent();
@@ -59,8 +57,7 @@ class PolyMotivator {
     // Quick action cards
     this.setupQuickActions();
 
-    // Study Buddy chatbot
-    this.setupChatbot();
+    // Chatbot removed
     
     // Confidence slider
     this.setupConfidenceSlider();
@@ -160,155 +157,7 @@ class PolyMotivator {
     }
   }
 
-  /**
-   * Setup Study Buddy chatbot interactions
-   */
-  setupChatbot() {
-    const form = document.getElementById('chat-form');
-    const input = document.getElementById('chat-message');
-    const prompts = document.querySelectorAll('.chat-prompt');
-    const resetBtn = document.getElementById('reset-chat');
-
-    if (!form || !input) return;
-
-    // Render previous session or greet
-    this.renderChatHistory();
-    if (!this.chatHistory.length) {
-      this.seedChatGreeting();
-    }
-
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const message = input.value.trim();
-      if (!message) return;
-      this.handleChatSubmit(message);
-      input.value = '';
-      input.focus();
-    });
-
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        form.requestSubmit();
-      }
-    });
-
-    prompts.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const promptText = btn.dataset.prompt || btn.textContent;
-        this.handleChatSubmit(promptText);
-      });
-    });
-
-    if (resetBtn) {
-      resetBtn.addEventListener('click', () => {
-        this.chatHistory = [];
-        this.saveChatHistory();
-        this.renderChatHistory(true);
-        this.seedChatGreeting();
-        this.trackEvent('chat_reset');
-      });
-    }
-  }
-
-  /**
-   * Initial greeting for empty chats
-   */
-  seedChatGreeting() {
-    const preferences = this.loadUserPreferences() || {};
-    const cluster = preferences.courseCluster || 'general';
-    const learningStyle = preferences.learningStyle || 'structured';
-    const greeting = `Hey! I'm your Study Buddy. I remember you're into ${cluster} and like a ${learningStyle} approach. Ask for a pep talk, a study plan, or help staying on track.`;
-    this.addChatMessage('bot', greeting);
-  }
-
-  /**
-   * Handle chat submit and respond
-   */
-  handleChatSubmit(message) {
-    this.addChatMessage('user', message);
-    this.showChatTyping(true);
-    this.trackEvent('chat_message_sent');
-
-    const replyDelay = Math.min(900, 400 + message.length * 10);
-    setTimeout(() => {
-      const reply = this.generateChatbotResponse(message);
-      this.addChatMessage('bot', reply);
-      this.showChatTyping(false);
-      this.trackEvent('chatbot_replied');
-    }, replyDelay);
-  }
-
-  /**
-   * Add message to UI and persistence
-   */
-  addChatMessage(role, text) {
-    const entry = {
-      role,
-      text,
-      timestamp: Date.now()
-    };
-
-    this.chatHistory.push(entry);
-    this.displayChatMessage(entry);
-    this.saveChatHistory();
-  }
-
-  /**
-   * Render existing chat history
-   */
-  renderChatHistory(clearOnly = false) {
-    const container = document.getElementById('chat-messages');
-    if (!container) return;
-
-    container.innerHTML = '';
-    if (clearOnly) return;
-
-    this.chatHistory.forEach(entry => this.displayChatMessage(entry, false));
-    this.scrollChatToBottom();
-  }
-
-  /**
-   * Display a single chat entry without mutating history
-   */
-  displayChatMessage(entry, shouldScroll = true) {
-    const container = document.getElementById('chat-messages');
-    if (!container) return;
-
-    const wrapper = document.createElement('div');
-    wrapper.className = `chat-message ${entry.role === 'user' ? 'user' : 'bot'}`;
-
-    const bubble = document.createElement('div');
-    bubble.className = 'bubble';
-    bubble.textContent = entry.text;
-
-    const meta = document.createElement('span');
-    meta.className = 'message-meta';
-    const label = entry.role === 'user' ? 'You' : 'Study Buddy';
-    meta.textContent = `${label} • ${new Date(entry.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-
-    wrapper.appendChild(bubble);
-    wrapper.appendChild(meta);
-    container.appendChild(wrapper);
-
-    if (shouldScroll) {
-      this.scrollChatToBottom();
-    }
-  }
-
-  scrollChatToBottom() {
-    const container = document.getElementById('chat-messages');
-    if (container) {
-      container.scrollTop = container.scrollHeight;
-    }
-  }
-
-  showChatTyping(isVisible) {
-    const typing = document.getElementById('chat-typing');
-    if (!typing) return;
-    typing.classList.toggle('hidden', !isVisible);
-    typing.setAttribute('aria-hidden', String(!isVisible));
-  }
+  
 
   /**
    * Setup confidence slider with real-time feedback
@@ -1343,23 +1192,6 @@ class PolyMotivator {
     };
   }
 
-  initializeChatResponseTemplates() {
-    return {
-      stress: [
-        'Deep breath! Do one small task first, then build momentum. I believe in you.',
-        'Let’s shrink the pressure: pick a 10-minute task and start there. Progress beats perfection.'
-      ],
-      focus: [
-        'Try a short focus sprint: 20 minutes on, 5 off. Put your phone in another room.',
-        'Block distractions for 15 minutes and rewrite today’s top 3 priorities in your notes.'
-      ],
-      general: [
-        'I’m here for quick tips, plans, or pep talks—just ask!',
-        'Your effort today is an investment in future you. Keep stacking the small wins.'
-      ]
-    };
-  }
-
   /**
    * Personalization Logic
    */
@@ -1387,70 +1219,6 @@ class PolyMotivator {
     return this.confidenceMessages[level] || this.confidenceMessages[3];
   }
 
-  generateChatbotResponse(message) {
-    const preferences = this.loadUserPreferences() || {};
-    const cluster = preferences.courseCluster || 'general';
-    const learningStyle = preferences.learningStyle || 'structured';
-    const lowerMessage = message.toLowerCase();
-    const responseParts = [];
-
-    if (lowerMessage.includes('motivat') || lowerMessage.includes('pep') || lowerMessage.includes('confidence')) {
-      const mot = this.getPersonalizedMotivation(1, preferences)[0];
-      if (mot) {
-        responseParts.push(`${mot.quote} ${mot.context}`);
-      }
-    }
-
-    if (lowerMessage.includes('tip') || lowerMessage.includes('study') || lowerMessage.includes('learn')) {
-      const tip = this.getPersonalizedStudyTips(1, preferences)[0];
-      if (tip) {
-        responseParts.push(`Try this ${learningStyle} friendly idea: ${tip.title} — ${tip.description}`);
-      }
-    }
-
-    if (lowerMessage.includes('plan') || lowerMessage.includes('schedule') || lowerMessage.includes('time') || lowerMessage.includes('focus')) {
-      responseParts.push(this.buildStudySprintPlan(preferences));
-    }
-
-    if (lowerMessage.includes('stress') || lowerMessage.includes('overwhelm') || lowerMessage.includes('tired')) {
-      responseParts.push(this.getRandomItems(this.chatResponseTemplates.stress, 1)[0]);
-    } else if (lowerMessage.includes('distract') || lowerMessage.includes('focus')) {
-      responseParts.push(this.getRandomItems(this.chatResponseTemplates.focus, 1)[0]);
-    }
-
-    if (!responseParts.length) {
-      const defaultLine = this.getRandomItems(this.chatResponseTemplates.general, 1)[0];
-      responseParts.push(`I’ve got you, ${learningStyle} learner in ${cluster}. ${defaultLine}`);
-      responseParts.push(this.buildStudySprintPlan(preferences));
-    }
-
-    return responseParts.join(' ');
-  }
-
-  buildStudySprintPlan(preferences) {
-    const cluster = preferences?.courseCluster || 'general';
-    const learningStyle = preferences?.learningStyle || 'structured';
-
-    const clusterFocus = {
-      engineering: 'a core formula or debugging a snippet',
-      business: 'a case headline and two bullet insights',
-      design: 'a quick sketch or moodboard refinement',
-      health: 'key terms and one scenario you might face',
-      general: 'your toughest concept from today'
-    };
-
-    const styleTwists = {
-      visual: 'draw a mini mind map',
-      'hands-on': 'apply it to a small example',
-      social: 'explain it out loud or to a friend',
-      structured: 'write 3 bullet summary lines'
-    };
-
-    const focusItem = clusterFocus[cluster] || clusterFocus.general;
-    const twist = styleTwists[learningStyle] || styleTwists.structured;
-
-    return `Try a 30-minute sprint: 1) 10m revisit ${focusItem}. 2) 15m ${twist} and practice. 3) 5m recap what stuck + set the next tiny step.`;
-  }
 
   getRandomItems(array, count) {
     const shuffled = [...array].sort(() => 0.5 - Math.random());
@@ -1548,20 +1316,7 @@ class PolyMotivator {
     return this.userPreferences;
   }
 
-  saveChatHistory() {
-    const trimmedHistory = this.chatHistory.slice(-50);
-    localStorage.setItem('polymotivator_chat_history', JSON.stringify(trimmedHistory));
-  }
-
-  loadChatHistory() {
-    try {
-      const stored = localStorage.getItem('polymotivator_chat_history');
-      return stored ? JSON.parse(stored) : [];
-    } catch (err) {
-      console.warn('Unable to load chat history', err);
-      return [];
-    }
-  }
+  
 
   checkUserPreferences() {
     const preferences = this.loadUserPreferences();
