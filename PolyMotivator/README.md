@@ -249,7 +249,7 @@ We welcome contributions from the community! Here's how you can help:
 - [ ] **Offline Mode:** Full functionality without internet
 - [ ] **Voice Interactions:** Audio motivation and study guidance
 - [ ] **Integration APIs:** Connect with popular study apps
-- [ ] **AI Chatbot:** Personal study assistant for questions
+<!-- Chatbot feature removed -->
 
 ### Technical Improvements
 - [ ] **Progressive Web App:** Native app-like experience
