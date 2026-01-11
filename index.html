@@ -340,5 +340,14 @@
 
     <!-- JavaScript -->
     <script src="js/app.js"></script>
+    
+    <!-- Chatbot -->
+    <script type="module">
+        import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
+        Chatbot.init({
+            chatflowid: "8d6e55b8-d94b-439d-9624-2bc7fc866c98",
+            apiHost: "https://flowise-production-870f.up.railway.app",
+        })
+    </script>
 </body>
 </html>
